@@ -278,9 +278,12 @@ h1 .en{
   pointer-events:none;
 }
 model-viewer{
+  display:block;
   width:100%;height:100%;
   background:transparent;
   --poster-color:transparent;
+  --progress-bar-color:var(--accent);
+  --progress-mask:transparent;
 }
 .vp-label{
   position:absolute;
@@ -702,6 +705,106 @@ footer{
   transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1);
 }
 .reveal.in{opacity:1;transform:none}
+
+/* ================= 即时诊断 ================= */
+.diag{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(26px,3.4vw,52px);align-items:start}
+@media(max-width:980px){.diag{grid-template-columns:1fr}}
+
+.drop{
+  border:1px dashed var(--line-2);
+  background:rgba(255,255,255,.014);
+  padding:clamp(38px,5vw,62px) clamp(22px,3vw,36px);
+  text-align:center;
+  transition:border-color .25s,background .25s;
+  cursor:pointer;
+  position:relative;
+}
+.drop:hover,.drop.over{border-color:var(--accent);background:rgba(255,180,0,.055)}
+.drop-ico{
+  width:56px;height:56px;margin:0 auto 20px;
+  border:1px solid var(--line-2);
+  display:grid;place-items:center;
+  font-family:var(--mono);font-size:22px;color:var(--accent);
+  transition:.25s;
+}
+.drop:hover .drop-ico{border-color:var(--accent)}
+.drop h4{font-size:16px;font-weight:600;margin-bottom:10px}
+.drop p{font-size:12.5px;line-height:1.9;color:var(--dim);max-width:340px;margin:0 auto}
+.drop .hl{color:var(--accent)}
+.dbtn{
+  margin-top:22px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--bg);background:var(--accent);
+  border:0;padding:12px 26px;cursor:pointer;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+  transition:.2s;font-weight:600;
+}
+.dbtn:hover{background:#ffc733}
+.dnote{margin-top:18px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--dim-2);text-transform:uppercase}
+
+.diag-right{min-height:320px}
+.diag-empty{
+  border:1px solid var(--line);
+  padding:clamp(30px,4vw,54px);
+  text-align:center;color:var(--dim-2);
+  font-size:12.5px;line-height:1.9;
+}
+
+/* 结论条 */
+.verdict{
+  border:1px solid var(--line);
+  border-left:3px solid var(--dim);
+  padding:18px 22px;margin-bottom:22px;
+  display:flex;align-items:center;gap:16px;
+}
+.verdict.ok{border-left-color:#37b26b;background:rgba(55,178,107,.055)}
+.verdict.warn{border-left-color:#e0692b;background:rgba(224,105,43,.055)}
+.verdict .vtag{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim-2)}
+.verdict .vtxt{font-size:16px;font-weight:600}
+.verdict.ok .vtxt{color:#4ed08a}
+.verdict.warn .vtxt{color:#f08a52}
+.verdict .vsub{font-size:11.5px;color:var(--dim);margin-top:4px}
+
+/* 指标网格 */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:22px}
+@media(max-width:520px){.metrics{grid-template-columns:1fr}}
+.metric{background:var(--bg);padding:14px 16px}
+.metric .k{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim-2)}
+.metric .v{font-family:var(--mono);font-size:17px;margin-top:6px;letter-spacing:-.01em}
+.metric .v.bad{color:#e0692b}
+.metric .v.ok{color:var(--accent)}
+.metric .v small{font-size:10px;color:var(--dim-2);margin-left:4px}
+
+/* 逐图列表 */
+.plist{max-height:280px;overflow-y:auto;border:1px solid var(--line);margin-bottom:22px}
+.plist::-webkit-scrollbar{width:6px}
+.plist::-webkit-scrollbar-thumb{background:var(--line-2)}
+.prow{display:grid;grid-template-columns:46px 1fr 76px 62px;gap:10px;align-items:center;
+      padding:8px 12px;border-bottom:1px solid var(--line);font-size:11px}
+.prow:last-child{border-bottom:0}
+.prow.flagg{background:rgba(224,105,43,.055)}
+.prow img{width:46px;height:34px;object-fit:cover;border:1px solid var(--line);background:#000}
+.prow .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
+.prow .nm em{display:block;font-style:normal;color:var(--dim-2);font-size:9.5px;font-family:var(--mono);margin-top:2px}
+.prow .mb{font-family:var(--mono);font-size:10px;color:var(--dim-2);text-align:right}
+.bar{height:4px;background:rgba(255,255,255,.07);position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;height:100%;display:block;background:var(--accent)}
+.bar i.bad{background:#e0692b}
+
+/* 建议 */
+.tips{border:1px solid var(--line);padding:18px 20px}
+.tips h5{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim-2);margin-bottom:12px}
+.tips li{list-style:none;font-size:12px;line-height:1.8;color:var(--dim);padding-left:18px;position:relative;margin-bottom:8px}
+.tips li::before{content:"→";position:absolute;left:0;color:var(--accent);font-family:var(--mono);font-size:10px}
+
+/* 重建说明 */
+.recon-note{
+  margin-top:34px;border:1px solid var(--line);border-left:3px solid var(--accent);
+  padding:22px 26px;background:rgba(255,180,0,.035);
+}
+.recon-note h4{font-size:15px;font-weight:600;margin-bottom:10px}
+.recon-note p{font-size:12.5px;line-height:1.9;color:var(--dim)}
+.recon-note code{font-family:var(--mono);color:var(--accent);font-size:11.5px}
 </style>
 </head>
 <body>
@@ -715,6 +818,7 @@ footer{
     <div class="brand-name">PHOTOLOOP</div>
   </div>
   <nav>
+    <a href="#try">诊断</a>
     <a href="#problem">问题</a>
     <a href="#pipeline">流程</a>
     <a href="#data">数据</a>
@@ -779,7 +883,6 @@ footer{
       rotation-per-second="16deg"
       shadow-intensity="1.1"
       exposure="1.15"
-      environment-image="neutral"
       camera-orbit="35deg 24deg auto"
       min-camera-orbit="auto 0deg auto"
       max-camera-orbit="auto 90deg auto"
@@ -803,10 +906,59 @@ footer{
   </div>
 </div>
 
-<!-- ============ 01 问题 ============ -->
-<section id="problem">
+<!-- ============ 01 即时诊断 ============ -->
+<section id="try">
   <div class="sec-head reveal">
     <div class="sec-num">01</div>
+    <div class="sec-title">
+      <h2>上传照片，现场体检</h2>
+      <span class="en">Live Diagnosis</span>
+    </div>
+    <div class="sec-note">全部在你的浏览器内完成</div>
+  </div>
+
+  <div class="diag reveal">
+    <div>
+      <div class="drop" id="drop">
+        <div class="drop-ico">＋</div>
+        <h4>拖入照片，或点击选择</h4>
+        <p>
+          支持 JPG / PNG。建议选 <span class="hl">30 张以上</span>同一物体的环绕照片。<br>
+          完整重建要几十分钟——先花 2 秒看看这组照片能不能成。
+        </p>
+        <button class="dbtn" id="pick">选择照片</button>
+        <input type="file" id="file" accept="image/*" multiple hidden>
+        <div class="dnote">照片不会上传 · 不出浏览器</div>
+      </div>
+    </div>
+
+    <div class="diag-right" id="out">
+      <div class="diag-empty">
+        等待照片…<br>
+        选好之后，这里会给出诊断报告
+      </div>
+    </div>
+  </div>
+
+  <div class="recon-note reveal">
+    <h4>为什么这里不能直接出模型</h4>
+    <p>
+      上面算的这些指标之所以能在浏览器里跑，是因为它们只需要<b>单张图</b>的信息。
+      但真正的三维重建要把 <code>30–300 张</code>照片放在一起求解——特征提取、特征匹配、光束平差，
+      每一步都需要服务端算力。你手上这组 264 张照片，在 <b>i7 + RTX 5060</b> 上跑了约
+      <code>40 分钟</code>，占用十几 GB 内存。浏览器既拿不到 CUDA，单页内存上限也只有 2–4 GB。
+    </p>
+    <p style="margin-top:12px">
+      所以本页的分工是 <b>前端诊断 → 服务端重建</b>。
+      重建结果就是页面顶部那个可以拖动旋转的模型。
+    </p>
+  </div>
+</section>
+
+<!-- ============ 02 问题 ============ -->
+<section id="problem">
+  <div class="sec-head reveal">
+    <div class="sec-num">02</div>
     <div class="sec-title">
       <h2>现有工具的三个断点</h2>
       <span class="en">The Problem</span>
@@ -836,7 +988,7 @@ footer{
 <!-- ============ 02 流程 ============ -->
 <section id="pipeline">
   <div class="sec-head reveal">
-    <div class="sec-num">02</div>
+    <div class="sec-num">03</div>
     <div class="sec-title">
       <h2>六个步骤，以及我们踩过的坑</h2>
       <span class="en">Pipeline</span>
@@ -888,7 +1040,7 @@ footer{
 <!-- ============ 03 数据 ============ -->
 <section id="data">
   <div class="sec-head reveal">
-    <div class="sec-num">03</div>
+    <div class="sec-num">04</div>
     <div class="sec-title">
       <h2>三组受控实验</h2>
       <span class="en">Controlled Experiments</span>
@@ -966,7 +1118,7 @@ footer{
 <!-- ============ 04 技术亮点 ============ -->
 <section id="tech">
   <div class="sec-head reveal">
-    <div class="sec-num">04</div>
+    <div class="sec-num">05</div>
     <div class="sec-title">
       <h2>最有价值的一个发现</h2>
       <span class="en">Normal Orientation</span>
@@ -1007,7 +1159,7 @@ footer{
 <!-- ============ 05 局限 ============ -->
 <section id="limits">
   <div class="sec-head reveal">
-    <div class="sec-num">05</div>
+    <div class="sec-num">06</div>
     <div class="sec-title">
       <h2>我们还没解决的问题</h2>
       <span class="en">Known Limitations</span>
@@ -1159,9 +1311,247 @@ setTimeout(()=>{
       const code = (ev.detail && ev.detail.sourceError && ev.detail.sourceError.message) || '';
       showFallback('模型加载错误：' + t + (code ? '　' + code : ''));
     });
+    // 10 秒后仍未加载完成，说明卡在了下载
+    setTimeout(()=>{
+      if(!el.loaded){
+        showFallback('模型在 10 秒内没有加载完成（文件约 2.5 MB，网络慢时会这样）');
+      }
+    }, 10000);
   }
 }, 4500);
 
+// ================= 即时诊断 =================
+(function(){
+  const drop = document.getElementById('drop');
+  const pick = document.getElementById('pick');
+  const input = document.getElementById('file');
+  const out = document.getElementById('out');
+  if(!drop || !input || !out) return;
+
+  const MAXN = 150;
+
+  function parseTiff(b, off){
+    if (off+8 > b.length) return null;
+    const le = b[off] === 0x49;
+    const u16 = o => le ? (b[o] | (b[o+1]<<8)) : ((b[o]<<8) | b[o+1]);
+    const u32 = o => le ? ((b[o] | (b[o+1]<<8) | (b[o+2]<<16) | (b[o+3]<<24)) >>> 0)
+                        : (((b[o]<<24)|(b[o+1]<<16)|(b[o+2]<<8)|b[o+3]) >>> 0);
+    if (u16(off+2) !== 42) return null;   // TIFF magic 在字节序标记之后
+    const ifd = off + u32(off+4);
+    if (ifd+2 > b.length) return null;
+    const n = u16(ifd);
+    let make = '', model = '';
+    for (let i=0;i<n;i++){
+      const e = ifd + 2 + i*12;
+      if (e+12 > b.length) break;
+      const tag = u16(e), count = u32(e+4), valOff = u32(e+8);
+      if (tag === 0x010F || tag === 0x0110){
+        const start = count > 4 ? off + valOff : e + 8;
+        let s = '';
+        for (let k=0;k<count-1;k++){
+          const c = b[start+k];
+          if (!c) break;
+          s += String.fromCharCode(c);
+        }
+        s = s.trim();
+        if (tag === 0x010F) make = s; else model = s;
+      }
+    }
+    return (make || model) ? {make, model} : null;
+  }
+
+  async function readExif(file){
+    try{
+      const buf = new Uint8Array(await file.slice(0, 160*1024).arrayBuffer());
+      let i = 2, guard = 0;
+      while (i < buf.length - 4 && guard++ < 64){
+        if (buf[i] !== 0xFF){ i++; continue; }
+        const m = buf[i+1];
+        if (m === 0xD8 || m === 0x01 || (m >= 0xD0 && m <= 0xD7)){ i += 2; continue; }
+        if (m === 0xD9 || m === 0xDA) break;   // 到达图像数据，后面不会再有 EXIF
+        const len = (buf[i+2]<<8) | buf[i+3];
+        if (len < 2) break;
+        if (m === 0xE1){
+          const s = i+4;
+          if (buf[s]===0x45 && buf[s+1]===0x78 && buf[s+2]===0x69 && buf[s+3]===0x66){
+            return parseTiff(buf, s+6);
+          }
+        }
+        i += 2 + len;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function analyzeBitmap(bmp){
+    const MAX = 512;
+    const sc = Math.min(MAX/bmp.width, MAX/bmp.height, 1);
+    const w = Math.max(16, Math.round(bmp.width*sc));
+    const h = Math.max(16, Math.round(bmp.height*sc));
+    const cv = document.createElement('canvas');
+    cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(bmp, 0, 0, w, h);
+    const d = ctx.getImageData(0,0,w,h).data;
+
+    const g = new Float32Array(w*h);
+    let shadow = 0, highlight = 0;
+    for (let i=0,p=0;i<d.length;i+=4,p++){
+      const v = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+      g[p] = v;
+      if (v < 16) shadow++;
+      if (v > 239) highlight++;
+    }
+
+    let sum=0, sum2=0, cnt=0;
+    for (let y=1;y<h-1;y++){
+      const row = y*w;
+      for (let x=1;x<w-1;x++){
+        const i = row+x;
+        const lap = g[i-w] + g[i+w] + g[i-1] + g[i+1] - 4*g[i];
+        sum += lap; sum2 += lap*lap; cnt++;
+      }
+    }
+    const mean = sum/cnt;
+    const varr = Math.max(0, sum2/cnt - mean*mean);
+
+    const tc = document.createElement('canvas');
+    tc.width = 92; tc.height = 68;
+    const tctx = tc.getContext('2d');
+    const ar = bmp.width/bmp.height, tar = 92/68;
+    let sw = bmp.width, sh = bmp.height, sx = 0, sy = 0;
+    if (ar > tar){ sw = bmp.height*tar; sx = (bmp.width-sw)/2; }
+    else { sh = bmp.width/tar; sy = (bmp.height-sh)/2; }
+    tctx.drawImage(bmp, sx, sy, sw, sh, 0, 0, 92, 68);
+
+    return {
+      w: bmp.width, h: bmp.height, blur: varr,
+      shadow: shadow/(w*h), highlight: highlight/(w*h),
+      thumb: tc.toDataURL('image/jpeg', 0.72)
+    };
+  }
+
+  function renderReport(rows, meta){
+    const blurVals = rows.map(r => r.blur).slice().sort((a,b)=>a-b);
+    const medBlur = blurVals.length ? blurVals[Math.floor(blurVals.length/2)] : 0;
+    const blurThr = Math.max(25, medBlur*0.32);
+
+    rows.forEach(r => {
+      r.flagBlur = r.blur < blurThr;
+      r.flagDark = r.shadow > 0.18;
+      r.flagBright = r.highlight > 0.12;
+      r.flagAny = r.flagBlur || r.flagDark || r.flagBright;
+    });
+
+    const resSet = new Set(rows.map(r => r.w + 'x' + r.h));
+    const camSet = new Set(rows.filter(r => r.cam).map(r => r.cam));
+    const nBad = rows.filter(r => r.flagAny).length;
+
+    const errs = [], warns = [];
+    if (rows.length < 10) errs.push('照片数量不足');
+    else if (rows.length < 20) errs.push('照片数量严重不足，重建会明显缺面');
+    else if (rows.length < 40) warns.push('照片偏少，建议 60 张以上');
+    if (resSet.size > 2) errs.push('检测到 ' + resSet.size + ' 种分辨率，COLMAP 会为每种单独建相机，平差不稳定');
+    else if (resSet.size > 1) warns.push('检测到 ' + resSet.size + ' 种分辨率（' + [...resSet].slice(0,3).join('、') + '）');
+    if (camSet.size > 1) warns.push('检测到 ' + camSet.size + ' 种相机型号（' + [...camSet].slice(0,3).join('、') + '）');
+    if (nBad > 0) warns.push(nBad + ' 张照片存在画质问题（模糊 / 欠曝 / 过曝）');
+
+    const bad = errs.length > 0, warn = !bad && warns.length > 0;
+    const verdict = bad
+      ? {cls:'warn', tag:'BUILD LIKELY FAILS', txt:'这组照片大概率建不出来', sub: errs.join('；')}
+      : warn
+      ? {cls:'warn', tag:'RISKY', txt:'能建，但质量会打折扣', sub: warns.join('；')}
+      : {cls:'ok', tag:'LOOKS OK', txt:'这组照片看起来可以重建', sub:'继续拍完整一圈会更好'};
+
+    const tips = [];
+    if (resSet.size > 1) tips.push('统一用手机原图，不要经过微信 / QQ 传输（会压缩并剥离 EXIF）');
+    if (rows.length < 60) tips.push('增加到 60–80 张，相邻间隔 5–10°');
+    if (nBad > 0) tips.push('剔除模糊和曝光异常的图，或补拍该角度');
+    tips.push('绕物体完整走一圈，用平移而不是原地转身');
+    tips.push('拍摄时锁定焦距，不要变焦');
+
+    const metricRows = [
+      ['照片数量', rows.length, rows.length < 20 ? 'bad' : (rows.length < 40 ? 'bad' : 'ok'), '张'],
+      ['分辨率种类', resSet.size, resSet.size > 1 ? 'bad' : 'ok', '种'],
+      ['相机型号', camSet.size || '—', camSet.size > 1 ? 'bad' : 'ok', '种'],
+      ['中位清晰度', medBlur.toFixed(0), '', ''],
+      ['可疑照片', nBad, nBad > 0 ? 'bad' : 'ok', '张'],
+      ['总容量', meta.totalMB.toFixed(1), '', 'MB']
+    ];
+
+    const rowsHtml = rows.map(r => {
+      const pct = Math.min(100, Math.round(r.blur / Math.max(medBlur*1.6, 1) * 100));
+      return '<div class="prow ' + (r.flagAny?'flagg':'') + '">'
+        + '<img src="' + r.thumb + '" alt="">'
+        + '<div class="nm">' + r.name + '<em>' + r.w + '×' + r.h
+        + (r.cam ? ' · ' + r.cam : '') + '</em></div>'
+        + '<div class="bar"><i class="' + (r.flagBlur?'bad':'') + '" style="width:' + pct + '%"></i></div>'
+        + '<div class="mb">' + (r.flagAny ? '⚠' : '✓') + ' ' + r.mb.toFixed(1) + 'M</div>'
+        + '</div>';
+    }).join('');
+
+    out.innerHTML =
+      '<div class="verdict ' + verdict.cls + '"><div>'
+      + '<div class="vtag">' + verdict.tag + '</div>'
+      + '<div class="vtxt">' + verdict.txt + '</div>'
+      + '<div class="vsub">' + verdict.sub + '</div></div></div>'
+      + '<div class="metrics">' + metricRows.map(function(m){
+          return '<div class="metric"><div class="k">' + m[0] + '</div>'
+            + '<div class="v ' + m[2] + '">' + m[1]
+            + (m[3] ? '<small>' + m[3] + '</small>' : '') + '</div></div>';
+        }).join('') + '</div>'
+      + '<div class="plist">' + rowsHtml + '</div>'
+      + '<div class="tips"><h5>建议</h5><ul>'
+      + tips.map(function(t){ return '<li>' + t + '</li>'; }).join('')
+      + '</ul></div>';
+  }
+
+  async function run(files){
+    const list = Array.from(files).filter(f => /^image\//.test(f.type)).slice(0, MAXN);
+    if (!list.length){ out.innerHTML = '<div class="diag-empty">没有可用的图片文件</div>'; return; }
+
+    out.innerHTML = '<div class="diag-empty">正在分析 ' + list.length
+      + ' 张照片…<br><span id="prog" style="color:var(--accent);font-family:var(--mono)">0 / '
+      + list.length + '</span></div>';
+    const prog = document.getElementById('prog');
+
+    const rows = [];
+    let totalBytes = 0;
+    for (let i=0;i<list.length;i++){
+      const f = list[i];
+      totalBytes += f.size;
+      try{
+        const bmp = await createImageBitmap(f);
+        const a = analyzeBitmap(bmp);
+        if (bmp.close) bmp.close();
+        const ex = await readExif(f);
+        rows.push(Object.assign({
+          name: f.name, mb: f.size/1024/1024,
+          cam: ex ? [ex.make, ex.model].filter(Boolean).join(' ') : ''
+        }, a));
+      }catch(e){
+        rows.push({name:f.name, mb:f.size/1024/1024, w:0, h:0, blur:0,
+                   shadow:0, highlight:0, thumb:'', cam:''});
+      }
+      if (prog && i % 3 === 0) prog.textContent = (i+1) + ' / ' + list.length;
+      if (i % 8 === 7) await new Promise(r => setTimeout(r, 0));
+    }
+    renderReport(rows, {totalMB: totalBytes/1024/1024});
+  }
+
+  pick.addEventListener('click', e => { e.stopPropagation(); input.click(); });
+  drop.addEventListener('click', () => input.click());
+  input.addEventListener('change', e => { if (e.target.files.length) run(e.target.files); });
+  ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); drop.classList.add('over');
+  }));
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); drop.classList.remove('over');
+  }));
+  drop.addEventListener('drop', e => {
+    if (e.dataTransfer && e.dataTransfer.files.length) run(e.dataTransfer.files);
+  });
+})();
 </script>
 
 </body>
