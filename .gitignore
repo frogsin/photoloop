@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# 数据与产物（体积大，不入库）
+*.ply
+*.obj
+*.glb
+*.bin
+*.db
+*.mp4
+data/
+实验数据记录/
+
+# 但展示页需要的模型要保留
+!docs/assets/*.glb
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
