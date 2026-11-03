@@ -6,8 +6,22 @@
 <title>PhotoLoop · 环绕建模</title>
 <meta name="description" content="绕物体拍一圈照片，自动生成可用的三维模型，并告诉你哪里拍错了。">
 
-<script type="module"
-        src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<!-- 优先加载仓库内的本地副本；没有则回退到 CDN -->
+<script type="module">
+  window.__mvSrc = null;
+  try {
+    await import('./assets/model-viewer.min.js');
+    window.__mvSrc = 'local';
+  } catch (e) {
+    try {
+      await import('https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js');
+      window.__mvSrc = 'cdn';
+    } catch (e2) {
+      window.__mvSrc = 'failed';
+      window.__mvError = String(e2 && e2.message || e2);
+    }
+  }
+</script>
 
 <style>
 :root{
@@ -782,8 +796,8 @@ footer{
     <div class="viewer-fallback" id="fallback">
       <div class="ico">!</div>
       <p class="tag">3D 查看器加载失败</p>
-      <p style="font-size:12px;color:var(--dim);max-width:280px;line-height:1.9">
-        可能是网络无法访问 CDN。<br>模型文件本身正常，可用 MeshLab 打开 <code style="font-family:var(--mono);color:var(--accent)">assets/ob01.glb</code>。
+      <p id="fb-msg" style="font-size:12px;color:var(--dim);max-width:320px;line-height:1.9;word-break:break-all">
+        正在诊断原因…
       </p>
     </div>
   </div>
@@ -1099,27 +1113,55 @@ const mv = document.getElementById('mv');
 const btnR = document.getElementById('btn-rotate');
 const btnRe = document.getElementById('btn-reset');
 
-if(btnR){
+if(btnR && mv){
   btnR.addEventListener('click',()=>{
     const on = mv.hasAttribute('auto-rotate');
     if(on){ mv.removeAttribute('auto-rotate'); btnR.classList.remove('on'); }
     else { mv.setAttribute('auto-rotate',''); btnR.classList.add('on'); }
   });
 }
-if(btnRe){
+if(btnRe && mv){
   btnRe.addEventListener('click',()=>{
-    mv.cameraOrbit = '35deg 68deg auto';
+    mv.cameraOrbit = '35deg 24deg auto';
     mv.fieldOfView = 'auto';
   });
 }
 
-// CDN 失败兜底
+// ---------- 诊断：把失败原因直接显示在页面上 ----------
+function showFallback(msg){
+  const fb = document.getElementById('fallback');
+  if(!fb) return;
+  fb.classList.add('show');
+  const d = document.getElementById('fb-msg');
+  if(d && msg) d.textContent = msg;
+}
+
+// WebGL 可用性
+(function(){
+  try{
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl2') || c.getContext('webgl');
+    if(!gl) showFallback('浏览器未启用 WebGL。请在设置中开启硬件加速后重试。');
+  }catch(e){ showFallback('WebGL 初始化异常：' + e.message); }
+})();
+
 setTimeout(()=>{
   if(!customElements.get('model-viewer')){
-    const fb = document.getElementById('fallback');
-    if(fb) fb.classList.add('show');
+    const src = window.__mvSrc || '未知';
+    const err = window.__mvError ? ('　' + window.__mvError) : '';
+    showFallback('查看器库加载失败（来源：' + src + '）' + err);
+    return;
   }
-}, 5000);
+  const el = document.getElementById('mv');
+  if(el){
+    el.addEventListener('error', (ev)=>{
+      const t = (ev.detail && ev.detail.type) || 'unknown';
+      const code = (ev.detail && ev.detail.sourceError && ev.detail.sourceError.message) || '';
+      showFallback('模型加载错误：' + t + (code ? '　' + code : ''));
+    });
+  }
+}, 4500);
+
 </script>
 
 </body>
